@@ -24,10 +24,9 @@ class AuthController extends Controller
     {
 
         $request->validate([
-            //'nombre' => 'required|unique:usuarios',
             'nombre' => 'required',
-            'email' => 'required',
-            'password' => 'required|min:6',
+            'email' => 'required|email|unique:usuarios,email',
+            'password' => 'required|min:4',
         ]);
 
         $usuario = Usuario::create([
@@ -38,7 +37,7 @@ class AuthController extends Controller
 
         session(['usuario' => $usuario]);
 
-        return redirect()->route('equipos.index');
+        return redirect()->route('home');
     }
 
     public function login(Request $request)
@@ -52,7 +51,7 @@ class AuthController extends Controller
 
         if ($usuario && Hash::check($request->password, $usuario->password)) {
             session(['usuario' => $usuario]);
-            return redirect()->route('equipos.index');
+            return redirect()->route('home');
         } else {
             return back()->withErrors(['login' => 'Credenciales inválidas']);
         }

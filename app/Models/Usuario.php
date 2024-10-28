@@ -6,5 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Usuario extends Model
 {
-    protected $fillable = ['nombre', 'password'];
+    public $timestamps = false;
+    protected $fillable = ['nombre', 'email', 'contrasena', 'peso', 'altura', 'sexo', 'edad', 'caloriasPorComida'];
 }

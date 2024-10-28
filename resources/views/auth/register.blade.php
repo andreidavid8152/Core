@@ -34,8 +34,11 @@
                     </div>
                     <div class="mb-4">
                         <label for="password" class="form-label fw-semibold">Contraseña:</label>
-                        <input type="password" class="form-control rounded-pill" id="password" name="password" placeholder="Crea una contraseña segura" required>
+                        <small class="form-text text-muted">La contraseña debe tener al menos 4 caracteres.</small>
+                        <input type="password" class="form-control rounded-pill" id="password" name="password"
+                            placeholder="Crea una contraseña segura" minlength="4" required>
                     </div>
+
                     <div class="d-grid">
                         <button type="submit" class="btn btn-success rounded-pill">Registrarse</button>
                     </div>
