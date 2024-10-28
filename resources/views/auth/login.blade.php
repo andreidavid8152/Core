@@ -30,7 +30,7 @@
                     </div>
                     <div class="mb-4">
                         <label for="password" class="form-label fw-semibold">Contraseña:</label>
-                        <input type="password" class="form-control rounded-pill" name="password" placeholder="Ingresa tu contraseña" required>
+                        <input type="password" class="form-control rounded-pill" name="password" minlength="4" placeholder="Ingresa tu contraseña" required>
                     </div>
                     <div class="d-grid">
                         <button type="submit" class="btn btn-success rounded-pill">Iniciar Sesión</button>

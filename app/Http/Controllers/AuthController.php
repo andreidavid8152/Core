@@ -43,8 +43,8 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required',
-            'password' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:4',
         ]);
 
         $usuario = Usuario::where('email', $request->email)->first();
