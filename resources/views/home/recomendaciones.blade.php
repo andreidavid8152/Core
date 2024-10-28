@@ -2,6 +2,6 @@
 
 @section('content')
 
-<h1>Soy recomendaciones</h1>
+<h1>Recomendaciones</h1>
 
 @endsection

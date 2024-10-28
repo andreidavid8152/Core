@@ -49,7 +49,7 @@ class AuthController extends Controller
 
         $usuario = Usuario::where('email', $request->email)->first();
 
-        if ($usuario && Hash::check($request->password, $usuario->password)) {
+        if ($usuario && Hash::check($request->password, $usuario->contrasena)) {
             session(['usuario' => $usuario]);
             return redirect()->route('home');
         } else {

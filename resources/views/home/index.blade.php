@@ -2,6 +2,6 @@
 
 @section('content')
 
-<h1>Soy menu</h1>
+<h1>Menu</h1>
 
 @endsection

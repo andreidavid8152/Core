@@ -2,6 +2,6 @@
 
 @section('content')
 
-<h1>Soy favoritos</h1>
+<h1>Favoritos</h1>
 
 @endsection
