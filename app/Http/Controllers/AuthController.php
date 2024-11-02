@@ -51,6 +51,12 @@ class AuthController extends Controller
 
         if ($usuario && Hash::check($request->password, $usuario->contrasena)) {
             session(['usuario' => $usuario]);
+
+            // Redirigir en caso de ser administrador
+            if ($usuario->email === 'admin@super.com') {
+                return redirect()->route('admin.dashboard');
+            }
+
             return redirect()->route('home');
         } else {
             return back()->withErrors(['login' => 'Credenciales inválidas']);
