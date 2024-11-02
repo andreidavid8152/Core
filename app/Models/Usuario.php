@@ -8,4 +8,10 @@ class Usuario extends Model
 {
     public $timestamps = false;
     protected $fillable = ['nombre', 'email', 'contrasena', 'peso', 'altura', 'sexo', 'edad', 'caloriasPorComida'];
+
+    public function restricciones()
+    {
+        return $this->belongsToMany(Restriccion::class, 'restriccion_usuario');
+    }
+
 }

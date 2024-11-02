@@ -19,9 +19,12 @@ Route::middleware(['user'])->group(function () {
 
 // Administrador
 Route::middleware(['admin'])->group(function () {
-    Route::get('/admin', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
-    Route::resource('restricciones', RestriccionController::class);
+    Route::resource('restricciones', RestriccionController::class)->parameters([
+        'restricciones' => 'restriccion'
+    ]);
+
 });
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

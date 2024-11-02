@@ -14,4 +14,10 @@ class Restriccion extends Model
     protected $fillable = [
         'descripcion',
     ];
+
+    public function usuarios()
+    {
+        return $this->belongsToMany(Usuario::class, 'restriccion_usuario');
+    }
+
 }

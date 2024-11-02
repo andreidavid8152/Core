@@ -13,7 +13,7 @@ class RestriccionController extends Controller
     public function index()
     {
         $restricciones = Restriccion::all();
-        return view('restricciones.index', compact('restricciones'));
+        return view('admin.restricciones.index', compact('restricciones'));
     }
 
     /**
@@ -21,7 +21,7 @@ class RestriccionController extends Controller
      */
     public function create()
     {
-        return view('restricciones.create');    
+        return view('admin.restricciones.create');    
     }
 
     /**
@@ -39,19 +39,11 @@ class RestriccionController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Restriccion $restriccion)
     {
-        return view('restricciones.edit', compact('restriccion'));
+        return view('admin.restricciones.edit', compact('restriccion'));
     }
 
     /**
@@ -73,7 +65,15 @@ class RestriccionController extends Controller
      */
     public function destroy(Restriccion $restriccion)
     {
+        // Verifica si la restricción está en uso por algún usuario
+        if ($restriccion->usuarios()->exists()) {
+            return redirect()->route('restricciones.index')
+            ->with('error', 'No se puede eliminar la restricción porque está en uso.');
+        }
+
+        // Si no está en uso, se permite la eliminación
         $restriccion->delete();
+
         return redirect()->route('restricciones.index')
         ->with('success', 'Restricción eliminada exitosamente');
     }
