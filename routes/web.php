@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RestriccionController;
+use App\Http\Controllers\PreferenciaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,6 +24,10 @@ Route::middleware(['admin'])->group(function () {
 
     Route::resource('restricciones', RestriccionController::class)->parameters([
         'restricciones' => 'restriccion'
+    ]);
+
+    Route::resource('preferencias', PreferenciaController::class)->parameters([
+        'preferencias' => 'preferencia'
     ]);
 
 });

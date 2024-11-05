@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="container">
+    
     <h1>Lista de Restricciones</h1>
 
     @if (session('success'))

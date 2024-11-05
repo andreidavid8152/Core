@@ -14,4 +14,10 @@ class Usuario extends Model
         return $this->belongsToMany(Restriccion::class, 'restriccion_usuario');
     }
 
+    public function preferencias()
+    {
+        return $this->belongsToMany(Preferencia::class, 'preferencia_usuario');
+    }
+
+
 }
