@@ -13,6 +13,7 @@
             <input type="text" name="descripcion" class="form-control" required>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+        <a href="{{ route('preferencias.index') }}" class="btn btn-secondary mt-3">Cancelar</a>
     </form>
 </div>
 @endsection

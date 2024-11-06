@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RestriccionController;
 use App\Http\Controllers\PreferenciaController;
+use App\Http\Controllers\IngredienteController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,6 +29,10 @@ Route::middleware(['admin'])->group(function () {
 
     Route::resource('preferencias', PreferenciaController::class)->parameters([
         'preferencias' => 'preferencia'
+    ]);
+
+    Route::resource('ingredientes', IngredienteController::class)->parameters([
+        'ingredientes' => 'ingrediente'
     ]);
 
 });
