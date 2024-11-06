@@ -13,8 +13,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Styles -->
-    <!-- <link href="{{ secure_asset('css/styles.css') }}" rel="stylesheet"> -->
-    <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
+    <link href="{{ secure_asset('css/styles.css') }}" rel="stylesheet">
+    <!-- <link href="{{ asset('css/welcome.css') }}" rel="stylesheet"> -->
 </head>
 
 <body>
@@ -74,6 +74,6 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    </body>
 
 </html>
