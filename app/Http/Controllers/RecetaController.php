@@ -24,7 +24,7 @@ class RecetaController extends Controller
         $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
-            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'imagen' => 'nullable|image|mimes:svg,png,jpg,webp|max:2048',
         ]);
 
         $data = $request->all();
@@ -41,10 +41,22 @@ class RecetaController extends Controller
             $data['imagen'] = $uploadedFileUrl;
         }
 
+        // Obtener el usuario desde la sesión
+        $usuario = session('usuario');
+
+        // Asegurarse de que el usuario exista en la sesión
+        if (!$usuario) {
+            return redirect()->route('login')->withErrors('Debe iniciar sesión para crear una receta.');
+        }
+
+        // Asignar el usuario_id
+        $data['usuario_id'] = $usuario->id;
+
         Receta::create($data);
 
         return redirect()->route('mis-recetas.index')->with('success', 'Receta creada exitosamente.');
     }
+
 
     public function edit(Receta $receta)
     {
@@ -56,36 +68,33 @@ class RecetaController extends Controller
         $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
-            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'imagen' => 'nullable|image|mimes:svg,png,jpg,webp|max:2048',
         ]);
 
         $data = $request->all();
 
         if ($request->hasFile('imagen')) {
-            // Eliminar la imagen anterior de Cloudinary
             if ($receta->imagen) {
-                // Obtener el public_id de la imagen anterior
                 $publicId = basename($receta->imagen, '.' . pathinfo($receta->imagen, PATHINFO_EXTENSION));
-
-                // Eliminar la imagen
                 Cloudinary::destroy($publicId);
             }
 
             $file = $request->file('imagen');
-
-            // Subir el archivo a Cloudinary
             $uploadedFileUrl = Cloudinary::upload($file->getRealPath(), [
                 'folder' => 'recetas',
             ])->getSecurePath();
 
-            // Guardar la URL en el campo 'imagen'
             $data['imagen'] = $uploadedFileUrl;
         }
+
+        // Evitar que el usuario_id sea modificado
+        $data['usuario_id'] = $receta->usuario_id;
 
         $receta->update($data);
 
         return redirect()->route('mis-recetas.index')->with('success', 'Receta actualizada exitosamente.');
     }
+
 
 
     public function destroy(Receta $receta)

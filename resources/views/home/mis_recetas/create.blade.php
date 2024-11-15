@@ -35,7 +35,7 @@
     <!-- Imagen -->
     <div class="form-group mt-3">
         <label for="imagen">Imagen</label>
-        <input type="file" name="imagen" class="form-control" accept="image/*">
+        <input type="file" name="imagen" class="form-control" accept=".svg,.png,.jpg,.jpeg,.webp">
     </div>
 
     <button type="submit" class="btn btn-primary mt-3">Guardar</button>
