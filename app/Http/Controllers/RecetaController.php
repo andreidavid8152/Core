@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Receta;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class RecetaController extends Controller
 {
@@ -29,7 +30,15 @@ class RecetaController extends Controller
         $data = $request->all();
 
         if ($request->hasFile('imagen')) {
-            $data['imagen'] = $request->file('imagen')->store('recetas', 'public');
+            $file = $request->file('imagen');
+
+            // Subir el archivo a Cloudinary
+            $uploadedFileUrl = Cloudinary::upload($file->getRealPath(), [
+                'folder' => 'recetas',
+            ])->getSecurePath();
+
+            // Guardar la URL en el campo 'imagen'
+            $data['imagen'] = $uploadedFileUrl;
         }
 
         Receta::create($data);
@@ -53,13 +62,31 @@ class RecetaController extends Controller
         $data = $request->all();
 
         if ($request->hasFile('imagen')) {
-            $data['imagen'] = $request->file('imagen')->store('recetas', 'public');
+            // Eliminar la imagen anterior de Cloudinary
+            if ($receta->imagen) {
+                // Obtener el public_id de la imagen anterior
+                $publicId = basename($receta->imagen, '.' . pathinfo($receta->imagen, PATHINFO_EXTENSION));
+
+                // Eliminar la imagen
+                Cloudinary::destroy($publicId);
+            }
+
+            $file = $request->file('imagen');
+
+            // Subir el archivo a Cloudinary
+            $uploadedFileUrl = Cloudinary::upload($file->getRealPath(), [
+                'folder' => 'recetas',
+            ])->getSecurePath();
+
+            // Guardar la URL en el campo 'imagen'
+            $data['imagen'] = $uploadedFileUrl;
         }
 
         $receta->update($data);
 
         return redirect()->route('mis-recetas.index')->with('success', 'Receta actualizada exitosamente.');
     }
+
 
     public function destroy(Receta $receta)
     {
