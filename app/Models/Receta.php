@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Receta extends Model
 {
-    protected $fillable = ['titulo', 'descripcion', 'pasosPreparacion', 'caloriasConsumidas', 'usuario_id'];
+    protected $fillable = ['titulo', 'descripcion', 'pasosPreparacion', 'caloriasConsumidas', 'usuario_id', 'imagen'];
 
     // Relación muchos a muchos con Ingrediente
     public function ingredientes()
