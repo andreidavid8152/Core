@@ -12,7 +12,7 @@
             </li>
             <!-- Mis Recetas -->
             <li class="nav-item mr-5">
-                <a class="nav-link" href="{{ route('home') }}">Mis Recetas</a>
+                <a class="nav-link" href="{{ route('mis-recetas.index') }}">Mis Recetas</a>
             </li>
             <!-- Favoritos -->
             <li class="nav-item mr-5">

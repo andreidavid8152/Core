@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RestriccionController;
 use App\Http\Controllers\PreferenciaController;
 use App\Http\Controllers\IngredienteController;
+use App\Http\Controllers\RecetaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,6 +18,12 @@ Route::middleware(['user'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/recomendaciones', [HomeController::class, 'recomendaciones'])->name('recomendaciones');
     Route::get('/favoritos', [HomeController::class, 'favoritos'])->name('favoritos');
+
+    Route::resource('mis-recetas', RecetaController::class)
+    ->parameters([
+        'mis-recetas' => 'receta',
+    ]);
+
 });
 
 // Administrador
