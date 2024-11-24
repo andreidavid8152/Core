@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RestriccionController;
 use App\Http\Controllers\PreferenciaController;
 use App\Http\Controllers\IngredienteController;
+use App\Http\Controllers\MiRecetaController;
 use App\Http\Controllers\RecetaController;
 
 Route::get('/', function () {
@@ -19,10 +20,13 @@ Route::middleware(['user'])->group(function () {
     Route::get('/recomendaciones', [HomeController::class, 'recomendaciones'])->name('recomendaciones');
     Route::get('/favoritos', [HomeController::class, 'favoritos'])->name('favoritos');
 
-    Route::resource('mis-recetas', RecetaController::class)
+    Route::resource('mis-recetas', MiRecetaController::class)
     ->parameters([
         'mis-recetas' => 'receta',
     ]);
+
+    Route::get('/recetas/{id}', [RecetaController::class, 'show'])->name('recetas.show');
+
 
 });
 

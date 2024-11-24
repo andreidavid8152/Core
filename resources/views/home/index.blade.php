@@ -17,7 +17,7 @@
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">{{ $receta->titulo }}</h5>
                     <p class="card-text">{{ Str::limit($receta->descripcion, 100) }}</p>
-                    <a href="#" class="btn btn-warning mt-auto">Ver Receta</a>
+                    <a href="{{ route('recetas.show', ['id' => $receta->id]) }}" class="btn btn-warning mt-auto">Ver Receta</a>
                 </div>
             </div>
         </div>
