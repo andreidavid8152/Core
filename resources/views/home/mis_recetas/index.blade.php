@@ -2,30 +2,6 @@
 
 @section('content')
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light mt-3">
-    <div class="container">
-        <ul class="navbar-nav mx-auto">
-            <!-- Home -->
-            <li class="nav-item mr-5">
-                <a class="nav-link" href="{{ route('home') }}">Home</a>
-            </li>
-            <!-- Mis Recetas -->
-            <li class="nav-item mr-5">
-                <a class="nav-link active" href="{{ route('mis-recetas.index') }}">Mis Recetas</a>
-            </li>
-            <!-- Favoritos -->
-            <li class="nav-item mr-5">
-                <a class="nav-link" href="{{ route('favoritos') }}">Favoritos</a>
-            </li>
-            <!-- Recomendaciones -->
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('recomendaciones') }}">Recomendaciones</a>
-            </li>
-        </ul>
-    </div>
-</nav>
-
 <!-- Mostrar Recetas -->
 <div class="container mt-4">
     <a href="{{ route('mis-recetas.create') }}" class="btn btn-success mb-3">Crear Nueva Receta</a>
@@ -57,7 +33,5 @@
     </div>
     @endif
 </div>
-
-
 
 @endsection

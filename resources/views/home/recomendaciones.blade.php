@@ -2,6 +2,4 @@
 
 @section('content')
 
-<h1>Recomendaciones</h1>
-
 @endsection

@@ -29,6 +29,32 @@
 
     <div class="container mt-4">
 
+        <!-- Mostrar el navbar secundario solo para usuarios no administradores -->
+        @if(session('usuario') && session('usuario')->email !== 'admin@super.com')
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mt-3">
+            <div class="container">
+                <ul class="navbar-nav mx-auto">
+                    <!-- Home -->
+                    <li class="nav-item mr-5">
+                        <a class="nav-link {{ Route::is('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
+                    </li>
+                    <!-- Mis Recetas -->
+                    <li class="nav-item mr-5">
+                        <a class="nav-link {{ Route::is('mis-recetas.index') ? 'active' : '' }}" href="{{ route('mis-recetas.index') }}">Mis Recetas</a>
+                    </li>
+                    <!-- Favoritos -->
+                    <li class="nav-item mr-5">
+                        <a class="nav-link {{ Route::is('favoritos') ? 'active' : '' }}" href="{{ route('favoritos') }}">Favoritos</a>
+                    </li>
+                    <!-- Recomendaciones -->
+                    <li class="nav-item">
+                        <a class="nav-link {{ Route::is('recomendaciones') ? 'active' : '' }}" href="{{ route('recomendaciones') }}">Recomendaciones</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        @endif
+
         @if(session('error'))
         <div class="alert alert-danger">
             {{ session('error') }}
