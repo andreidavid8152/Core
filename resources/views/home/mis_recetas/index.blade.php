@@ -22,7 +22,7 @@
                             <form action="{{ route('mis-recetas.destroy', $receta) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar esta receta?')">Eliminar</button>
                             </form>
                         </div>
                     </div>

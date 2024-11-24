@@ -29,8 +29,8 @@
 
     <div class="container mt-4">
 
-        <!-- Mostrar el navbar secundario solo para usuarios no administradores -->
-        @if(session('usuario') && session('usuario')->email !== 'admin@super.com')
+        <!-- Mostrar el navbar secundario solo en rutas específicas -->
+        @if(Request::routeIs('home', 'mis-recetas.index', 'favoritos', 'recomendaciones'))
         <nav class="navbar navbar-expand-lg navbar-light bg-light mt-3">
             <div class="container">
                 <ul class="navbar-nav mx-auto">
@@ -56,7 +56,7 @@
         @endif
 
         @if(session('error'))
-        <div class="alert alert-danger">
+        <div class="alert alert-danger mt-3">
             {{ session('error') }}
         </div>
         @endif
