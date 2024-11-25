@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Receta;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use App\Models\Ingrediente;
 
 class MiRecetaController extends Controller
 {
@@ -21,7 +22,8 @@ class MiRecetaController extends Controller
 
     public function create()
     {
-        return view('home.mis_recetas.create');
+        $ingredientes = Ingrediente::all(); // Obtenemos todos los ingredientes de la base de datos
+        return view('home.mis_recetas.create', compact('ingredientes'));
     }
 
     public function store(Request $request)
