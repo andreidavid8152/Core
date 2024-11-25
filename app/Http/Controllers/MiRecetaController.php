@@ -31,10 +31,16 @@ class MiRecetaController extends Controller
         $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
+            'pasosPreparacion' => 'required|string',
+            'caloriasConsumidas' => 'required|integer|min:0',
             'imagen' => 'nullable|image|mimes:svg,png,jpg,webp|max:2048',
+            'ingredientes' => 'required|array',
+            'ingredientes.*.id' => 'required|integer|exists:ingredientes,id',
+            'ingredientes.*.cantidad' => 'required|integer|min:1',
+            'ingredientes.*.unidadMedida' => 'required|string|max:50', // Cambiado a 'unidadMedida'
         ]);
 
-        $data = $request->all();
+        $data = $request->except('ingredientes');
 
         if ($request->hasFile('imagen')) {
             $file = $request->file('imagen');
@@ -59,7 +65,16 @@ class MiRecetaController extends Controller
         // Asignar el usuario_id
         $data['usuario_id'] = $usuario->id;
 
-        Receta::create($data);
+        // Crear la receta
+        $receta = Receta::create($data);
+
+        // Asociar ingredientes a la receta con cantidades y unidades
+        foreach ($request->input('ingredientes') as $ingredienteData) {
+            $receta->ingredientes()->attach($ingredienteData['id'], [
+                'cantidad' => $ingredienteData['cantidad'],
+                'unidadMedida' => $ingredienteData['unidadMedida'], // Cambiado a 'unidadMedida'
+            ]);
+        }
 
         return redirect()->route('mis-recetas.index')->with('success', 'Receta creada exitosamente.');
     }

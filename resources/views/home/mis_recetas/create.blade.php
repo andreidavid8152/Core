@@ -2,9 +2,20 @@
 
 @section('content')
 
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+
 <h1>Crear Receta</h1>
 
-<form action="{{ route('mis-recetas.store') }}" method="POST" enctype="multipart/form-data">
+<form id="recetaForm" action="{{ route('mis-recetas.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
 
     <!-- Título -->
@@ -109,6 +120,7 @@
         const selectedContainer = document.getElementById('selected-ingredientes');
         const ingredientesModal = document.getElementById('ingredientesModal');
         const checkboxes = document.querySelectorAll('.ingrediente-checkbox');
+        const mainForm = document.getElementById('recetaForm'); // Seleccionamos el formulario principal
 
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', function() {
@@ -132,11 +144,12 @@
             const selectedCheckboxes = document.querySelectorAll('.ingrediente-checkbox:checked');
             selectedContainer.innerHTML = '';
 
-            // Eliminar inputs ocultos existentes
-            const existingInputs = document.querySelectorAll('.ingrediente-hidden-inputs');
+            // Eliminar inputs ocultos existentes del formulario principal
+            const existingInputs = mainForm.querySelectorAll('.ingrediente-hidden-inputs');
             existingInputs.forEach(input => input.remove());
 
             let valid = true;
+            let index = 0; // Usaremos un índice numérico
 
             selectedCheckboxes.forEach(checkbox => {
                 const ingredienteId = checkbox.value;
@@ -159,24 +172,26 @@
                 // Crear inputs ocultos para enviar al servidor
                 const hiddenInputId = document.createElement('input');
                 hiddenInputId.type = 'hidden';
-                hiddenInputId.name = `ingredientes[${ingredienteId}][id]`;
+                hiddenInputId.name = `ingredientes[${index}][id]`;
                 hiddenInputId.value = ingredienteId;
                 hiddenInputId.className = 'ingrediente-hidden-inputs';
-                document.querySelector('form').appendChild(hiddenInputId);
+                mainForm.appendChild(hiddenInputId); // Agregamos al formulario principal
 
                 const hiddenInputCantidad = document.createElement('input');
                 hiddenInputCantidad.type = 'hidden';
-                hiddenInputCantidad.name = `ingredientes[${ingredienteId}][cantidad]`;
+                hiddenInputCantidad.name = `ingredientes[${index}][cantidad]`;
                 hiddenInputCantidad.value = cantidadInput.value;
                 hiddenInputCantidad.className = 'ingrediente-hidden-inputs';
-                document.querySelector('form').appendChild(hiddenInputCantidad);
+                mainForm.appendChild(hiddenInputCantidad); // Agregamos al formulario principal
 
                 const hiddenInputUnidad = document.createElement('input');
                 hiddenInputUnidad.type = 'hidden';
-                hiddenInputUnidad.name = `ingredientes[${ingredienteId}][unidad]`;
+                hiddenInputUnidad.name = `ingredientes[${index}][unidadMedida]`;
                 hiddenInputUnidad.value = unidadInput.value;
                 hiddenInputUnidad.className = 'ingrediente-hidden-inputs';
-                document.querySelector('form').appendChild(hiddenInputUnidad);
+                mainForm.appendChild(hiddenInputUnidad); // Agregamos al formulario principal
+
+                index++; // Incrementamos el índice
             });
 
             if (!valid) return;
