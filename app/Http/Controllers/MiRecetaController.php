@@ -82,21 +82,34 @@ class MiRecetaController extends Controller
 
     public function edit(Receta $receta)
     {
-        return view('home.mis_recetas.edit', compact('receta'));
+        $ingredientes = Ingrediente::all();
+        $ingredientesSeleccionados = $receta->ingredientes()->withPivot('cantidad', 'unidadMedida')->get();
+
+        return view('home.mis_recetas.edit', compact('receta', 'ingredientes', 'ingredientesSeleccionados'));
     }
 
     public function update(Request $request, Receta $receta)
     {
+        // Validaciones
         $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
-            'imagen' => 'nullable|image|mimes:svg,png,jpg,webp|max:2048',
+            'pasosPreparacion' => 'required|string',
+            'caloriasConsumidas' => 'required|integer|min:0',
+            'imagen' => 'nullable|image|mimes:svg,png,jpg,jpeg,webp|max:2048',
+            'ingredientes' => 'required|array',
+            'ingredientes.*.id' => 'required|integer|exists:ingredientes,id',
+            'ingredientes.*.cantidad' => 'required|integer|min:1',
+            'ingredientes.*.unidadMedida' => 'required|string|max:50',
         ]);
 
-        $data = $request->all();
+        // Excluir los ingredientes de los datos a actualizar
+        $data = $request->except('ingredientes');
 
+        // Procesar la imagen si se ha subido una nueva
         if ($request->hasFile('imagen')) {
             if ($receta->imagen) {
+                // Eliminar la imagen anterior de Cloudinary
                 $publicId = basename($receta->imagen, '.' . pathinfo($receta->imagen, PATHINFO_EXTENSION));
                 Cloudinary::destroy($publicId);
             }
@@ -112,12 +125,21 @@ class MiRecetaController extends Controller
         // Evitar que el usuario_id sea modificado
         $data['usuario_id'] = $receta->usuario_id;
 
+        // Actualizar la receta
         $receta->update($data);
+
+        // Sincronizar los ingredientes con cantidades y unidades
+        $ingredientesData = [];
+        foreach ($request->input('ingredientes') as $ingredienteData) {
+            $ingredientesData[$ingredienteData['id']] = [
+                'cantidad' => $ingredienteData['cantidad'],
+                'unidadMedida' => $ingredienteData['unidadMedida'],
+            ];
+        }
+        $receta->ingredientes()->sync($ingredientesData);
 
         return redirect()->route('mis-recetas.index')->with('success', 'Receta actualizada exitosamente.');
     }
-
-
 
     public function destroy(Receta $receta)
     {
