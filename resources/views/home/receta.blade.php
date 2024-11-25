@@ -2,7 +2,13 @@
 
 @section('content')
 <div class="container mt-5">
-    @if(isset($receta))
+
+    @if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+    @endif
+
     <div class="card shadow-sm">
         <div class="card-body">
             <div class="row">
@@ -49,9 +55,9 @@
 
             <ol>
                 @foreach($pasos as $paso)
-                    @if(!empty(trim($paso)))
-                        <li>{{ $paso }}</li>
-                    @endif
+                @if(!empty(trim($paso)))
+                <li>{{ $paso }}</li>
+                @endif
                 @endforeach
             </ol>
 
@@ -73,13 +79,14 @@
         <!-- Botones de interacción -->
         <div class="card-footer text-center">
             <a href="{{ route('home') }}" class="btn btn-secondary">Regresar</a>
-            <button class="btn btn-warning">Marcar como Favorita</button>
+            <form action="{{ route('recetas.favorito', $receta->id) }}" method="POST" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-warning">
+                    {{ $receta->usuariosFavoritos->contains(session('usuario')->id) ? 'Quitar de Favoritos' : 'Agregar a Favoritos' }}
+                </button>
+            </form>
         </div>
     </div>
-    @else
-    <div class="alert alert-warning text-center">
-        <strong>¡Error!</strong> No se encontró la receta solicitada.
-    </div>
-    @endif
+
 </div>
 @endsection

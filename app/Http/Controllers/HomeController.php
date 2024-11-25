@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Receta;
+use App\Models\Usuario;
 
 class HomeController extends Controller
 {
@@ -20,8 +21,18 @@ class HomeController extends Controller
         return view('home.recomendaciones');
     }
 
-    public function favoritos(){
-        return view('home.favoritos');
+    public function favoritos()
+    {
+        // Obtener al usuario autenticado desde la sesión
+        $usuario = session('usuario');
+        $usuario = Usuario::find($usuario->id); // Asegurar el modelo completo
+
+        // Obtener las recetas favoritas del usuario
+        $favoritos = $usuario->recetasFavoritas;
+
+        // Retornar la vista con las recetas favoritas
+        return view('home.favoritos', compact('favoritos'));
     }
+
 
 }

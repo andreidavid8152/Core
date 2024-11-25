@@ -27,6 +27,7 @@ Route::middleware(['user'])->group(function () {
 
     Route::get('/recetas/{id}', [RecetaController::class, 'show'])->name('recetas.show');
 
+    Route::post('/recetas/{id}/favorito', [RecetaController::class, 'toggleFavorito'])->name('recetas.favorito');
 
 });
 
