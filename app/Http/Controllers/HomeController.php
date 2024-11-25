@@ -10,8 +10,11 @@ class HomeController extends Controller
 {
     public function index()
     {
+        // Obtener el usuario desde la sesión
+        $usuario = session('usuario');
+
         // Obtener todas las recetas
-        $recetas = Receta::all();
+        $recetas = Receta::where('usuario_id', '!=', $usuario->id)->get();
 
         // Pasar las recetas a la vista
         return view('home.index', compact('recetas'));

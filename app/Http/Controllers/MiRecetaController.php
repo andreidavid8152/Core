@@ -10,7 +10,12 @@ class MiRecetaController extends Controller
 {
     public function index()
     {
-        $recetas = Receta::all(); // Recupera todas las recetas
+        // Obtener el usuario desde la sesión
+        $usuario = session('usuario');
+
+        // Recuperar las recetas del usuario
+        $recetas = Receta::where('usuario_id', $usuario->id)->get();
+
         return view('home.mis_recetas.index', compact('recetas'));
     }
 
