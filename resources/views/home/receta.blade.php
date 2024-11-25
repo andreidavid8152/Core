@@ -42,7 +42,19 @@
         <!-- Pasos de preparación -->
         <div class="card-body">
             <h4 class="card-subtitle mb-3">Pasos de Preparación</h4>
-            <p>{!! $receta->pasosPreparacion !!}</p>
+            @php
+            // Dividimos los pasos por saltos de línea
+            $pasos = preg_split('/\r\n|\r|\n/', $receta->pasosPreparacion);
+            @endphp
+
+            <ol>
+                @foreach($pasos as $paso)
+                    @if(!empty(trim($paso)))
+                        <li>{{ $paso }}</li>
+                    @endif
+                @endforeach
+            </ol>
+
         </div>
         <!-- Ingredientes -->
         @if($receta->ingredientes->isNotEmpty())
