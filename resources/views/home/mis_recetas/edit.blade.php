@@ -170,18 +170,21 @@
             selectedContainer.innerHTML = '';
             checkboxes.forEach(checkbox => {
                 const ingredienteId = checkbox.value;
-                const label = document.querySelector(`label[for="${checkbox.id}"]`).innerText;
+                // Limpia el texto del label para evitar <br> innecesarios
+                const label = document.querySelector(`label[for="${checkbox.id}"]`).innerText.trim();
                 const cantidadInput = document.querySelector(`.cantidad-input[data-ingrediente-id="${ingredienteId}"]`);
                 const unidadInput = document.querySelector(`.unidad-input[data-ingrediente-id="${ingredienteId}"]`);
 
                 if (checkbox.checked && cantidadInput.value && unidadInput.value) {
                     const span = document.createElement('span');
                     span.className = 'badge bg-info me-1 mr-2';
-                    span.innerText = `${label}: ${cantidadInput.value} ${unidadInput.value}`;
+                    // Asegúrate de que el texto no contiene saltos de línea
+                    span.innerText = `${label}: ${cantidadInput.value.trim()} ${unidadInput.value.trim()}`;
                     selectedContainer.appendChild(span);
                 }
             });
         };
+
 
         // Habilitar o deshabilitar campos de cantidad y unidad según selección
         checkboxes.forEach(checkbox => {

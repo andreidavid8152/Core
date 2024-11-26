@@ -15,6 +15,11 @@
         </a>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
+                <li class="nav-item mr-4">
+                    <a class="nav-link" href="{{ route('perfil') }}">
+                        <i class="fas fa-user-circle"></i> Perfil
+                    </a>
+                </li>
                 @if(session('usuario'))
                 <li class="nav-item">
                     <form action="{{ route('logout') }}" method="POST" class="d-inline">

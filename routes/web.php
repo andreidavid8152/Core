@@ -9,6 +9,7 @@ use App\Http\Controllers\PreferenciaController;
 use App\Http\Controllers\IngredienteController;
 use App\Http\Controllers\MiRecetaController;
 use App\Http\Controllers\RecetaController;
+use App\Http\Controllers\PerfilController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,6 +29,10 @@ Route::middleware(['user'])->group(function () {
     Route::get('/recetas/{id}', [RecetaController::class, 'show'])->name('recetas.show');
 
     Route::post('/recetas/{id}/favorito', [RecetaController::class, 'toggleFavorito'])->name('recetas.favorito');
+
+    Route::resource('perfil', PerfilController::class)->only(['index', 'update'])->names([
+        'index' => 'perfil',
+    ]);
 
 });
 
