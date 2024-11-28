@@ -10,12 +10,11 @@ class PerfilController extends Controller
 {
     public function index()
     {
-        $usuario = session('usuario'); // Obtenemos el usuario desde la sesión
+        $usuario = Usuario::with('restricciones')->find(session('usuario')->id); // Carga las restricciones del usuario
+        $restricciones = Restriccion::all(); // Todas las restricciones disponibles
+        $restriccionesUsuario = $usuario->restricciones->pluck('id')->toArray(); // IDs de restricciones del usuario
 
-        // Cargar restricciones desde la base de datos
-        $restricciones = Restriccion::all();
-
-        return view('perfil', compact('usuario', 'restricciones'));
+        return view('perfil', compact('usuario', 'restricciones', 'restriccionesUsuario'));
     }
 
     public function update(Request $request)

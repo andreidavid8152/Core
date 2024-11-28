@@ -31,17 +31,17 @@
 
             <div class="mb-3">
                 <label for="peso" class="form-label">Peso (kg)</label>
-                <input type="decimal" name="peso" id="peso" class="form-control" value="{{ $usuario->peso }}">
+                <input type="number" name="peso" id="peso" class="form-control" value="{{ $usuario->peso }}" step="0.01" min="0" max="635">
             </div>
 
             <div class="mb-3">
                 <label for="altura" class="form-label">Altura (m)</label>
-                <input type="decimal" name="altura" id="altura" class="form-control" value="{{ $usuario->altura }}">
+                <input type="number" name="altura" id="altura" class="form-control" value="{{ $usuario->altura }}" step="0.01" min="0" max="3">
             </div>
 
             <div class="mb-3">
                 <label for="edad" class="form-label">Edad</label>
-                <input type="number" name="edad" id="edad" class="form-control" value="{{ $usuario->edad }}">
+                <input type="number" name="edad" id="edad" class="form-control" value="{{ $usuario->edad }}" min="0" max="120">
             </div>
 
             <div class="mb-3">
@@ -55,7 +55,7 @@
 
             <div class="mb-3">
                 <label for="caloriasPorComida" class="form-label">Calorías por comida</label>
-                <input type="number" name="caloriasPorComida" id="caloriasPorComida" class="form-control" value="{{ $usuario->caloriasPorComida }}">
+                <input type="number" name="caloriasPorComida" id="caloriasPorComida" class="form-control" value="{{ $usuario->caloriasPorComida }}" min="0" max="9999">
             </div>
 
             <button type="submit" class="btn btn-success">Guardar cambios</button>
@@ -81,9 +81,13 @@
             </button>
             <!-- Contenedor para mostrar las restricciones seleccionadas -->
             <div id="selected-restricciones">
-                @foreach($usuario->restricciones as $restriccion)
-                <span class="badge bg-info me-1">{{ $restriccion->nombre }}</span>
+                @if (!empty($restriccionesUsuario))
+                @foreach($restricciones->whereIn('id', $restriccionesUsuario) as $restriccion)
+                <span class="badge bg-info me-1">{{ $restriccion->descripcion }}</span>
                 @endforeach
+                @else
+                <p class="text-muted">No se han seleccionado restricciones.</p>
+                @endif
             </div>
         </div>
         <div class="card-footer">
@@ -114,7 +118,7 @@
                             <td>
                                 <input class="form-check-input restriccion-checkbox" type="checkbox" value="{{ $restriccion->id }}"
                                     id="restriccion-{{ $restriccion->id }}"
-                                    {{ $usuario->restricciones->contains($restriccion->id) ? 'checked' : '' }}>
+                                    {{ in_array($restriccion->id, $restriccionesUsuario) ? 'checked' : '' }}>
                             </td>
                             <td>
                                 <label class="form-check-label" for="restriccion-{{ $restriccion->id }}">
@@ -148,8 +152,12 @@
             const existingInputs = mainForm.querySelectorAll('.restriccion-hidden-inputs');
             existingInputs.forEach(input => input.remove());
 
+            let selectedCount = 0;
+
             checkboxes.forEach(checkbox => {
                 if (checkbox.checked) {
+                    selectedCount++;
+
                     const restriccionId = checkbox.value;
                     const label = document.querySelector(`label[for="restriccion-${restriccionId}"]`).innerText;
 
@@ -169,12 +177,16 @@
                 }
             });
 
+            // Si no se selecciona nada, mostrar mensaje
+            if (selectedCount === 0) {
+                selectedContainer.innerHTML = '<p class="text-muted">No se han seleccionado restricciones.</p>';
+            }
+
             // Cerrar el modal
             const modalInstance = bootstrap.Modal.getInstance(document.getElementById('restriccionesModal'));
             modalInstance.hide();
         });
     });
 </script>
-
 
 @endsection

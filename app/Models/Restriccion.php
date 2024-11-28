@@ -17,7 +17,7 @@ class Restriccion extends Model
 
     public function usuarios()
     {
-        return $this->belongsToMany(Usuario::class, 'restriccion_usuario');
+        return $this->belongsToMany(Usuario::class, 'restriccion_usuario','restriccion_id', 'usuario_id')->withTimestamps();
     }
 
 }
