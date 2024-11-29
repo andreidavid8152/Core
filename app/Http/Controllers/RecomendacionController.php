@@ -109,14 +109,18 @@ class RecomendacionController extends Controller
         ->whereIn('usuario_id', $usuariosSimilares->pluck('id'))
         ->pluck('receta_id');
 
-        // Obtener las recetas y calcular compatibilidad
-        $recetas = Receta::whereIn('id', $recetasFavoritas)
+        // Obtener IDs de recetas favoritas del usuario actual para excluirlas
+        $recetasFavoritasUsuarioActual = $usuario->recetasFavoritas()->pluck('recetas.id');
+
+        // Excluir recetas que el usuario ya ha agregado a favoritos
+        $recetasRecomendadas = Receta::whereIn('id', $recetasFavoritas)
+            ->whereNotIn('id', $recetasFavoritasUsuarioActual)
             ->with('usuario')
             ->get();
 
         $recomendaciones = [];
 
-        foreach ($recetas as $receta) {
+        foreach ($recetasRecomendadas as $receta) {
             // Obtener el usuario que marcó como favorita la receta
             $usuarioReceta = $usuariosSimilares->firstWhere('id', $receta->usuario_id);
 
@@ -124,7 +128,7 @@ class RecomendacionController extends Controller
                 // La compatibilidad de la receta es la misma que la del usuario que la marcó como favorita
                 $porcentajeCompatibilidad = $usuarioReceta->porcentajeCompatibilidad;
 
-                if ($porcentajeCompatibilidad >= 75) { // Ajuste para considerar solo compatibilidad >= 75%
+                if ($porcentajeCompatibilidad >= 75) { // Considerar solo compatibilidad >= 75%
                     $recomendaciones[] = [
                         'receta' => $receta,
                         'compatibilidad' => round($porcentajeCompatibilidad, 2),
