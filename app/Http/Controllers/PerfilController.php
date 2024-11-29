@@ -28,11 +28,11 @@ class PerfilController extends Controller
 
         $request->validate([
             'nombre' => 'required|string|max:100',
-            'peso' => 'nullable|numeric|min:0|max:635',
-            'altura' => 'nullable|numeric|min:0|max:3',
-            'edad' => 'nullable|integer|min:0|max:120',
-            'sexo' => 'nullable|string|in:Masculino,Femenino',
-            'caloriasPorComida' => 'nullable|integer|min:0|max:9999',
+            'peso' => 'required|numeric|min:0|max:635',
+            'altura' => 'required|numeric|min:0|max:3',
+            'edad' => 'required|integer|min:0|max:120',
+            'sexo' => 'required|string|in:Masculino,Femenino',
+            'caloriasPorComida' => 'required|integer|min:0|max:9999',
         ]);
 
         $usuario->update($request->only('nombre', 'peso', 'altura', 'edad', 'sexo', 'caloriasPorComida'));

@@ -22,6 +22,9 @@
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre</label>
                 <input type="text" name="nombre" id="nombre" class="form-control" value="{{ $usuario->nombre }}" required>
+                @error('nombre')
+                <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
 
             <div class="mb-3">
@@ -31,17 +34,26 @@
 
             <div class="mb-3">
                 <label for="peso" class="form-label">Peso (kg)</label>
-                <input type="number" name="peso" id="peso" class="form-control" value="{{ $usuario->peso }}" step="0.01" min="0" max="635">
+                <input type="number" name="peso" id="peso" class="form-control" value="{{ $usuario->peso }}" step="0.01" min="0" max="635" required>
+                @error('peso')
+                <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
 
             <div class="mb-3">
                 <label for="altura" class="form-label">Altura (m)</label>
-                <input type="number" name="altura" id="altura" class="form-control" value="{{ $usuario->altura }}" step="0.01" min="0" max="3">
+                <input type="number" name="altura" id="altura" class="form-control" value="{{ $usuario->altura }}" step="0.01" min="0" max="3" required>
+                @error('altura')
+                <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
 
             <div class="mb-3">
                 <label for="edad" class="form-label">Edad</label>
-                <input type="number" name="edad" id="edad" class="form-control" value="{{ $usuario->edad }}" min="0" max="120">
+                <input type="number" name="edad" id="edad" class="form-control" value="{{ $usuario->edad }}" min="0" max="120" required>
+                @error('edad')
+                <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
 
             <div class="mb-3">
@@ -51,11 +63,17 @@
                     <option value="Masculino" {{ $usuario->sexo == 'Masculino' ? 'selected' : '' }}>Masculino</option>
                     <option value="Femenino" {{ $usuario->sexo == 'Femenino' ? 'selected' : '' }}>Femenino</option>
                 </select>
+                @error('sexo')
+                <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
 
             <div class="mb-3">
                 <label for="caloriasPorComida" class="form-label">Calorías por comida</label>
-                <input type="number" name="caloriasPorComida" id="caloriasPorComida" class="form-control" value="{{ $usuario->caloriasPorComida }}" min="0" max="9999">
+                <input type="number" name="caloriasPorComida" id="caloriasPorComida" class="form-control" value="{{ $usuario->caloriasPorComida }}" min="0" max="9999" required>
+                @error('caloriasPorComida')
+                <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
 
             <button type="submit" class="btn btn-success">Guardar cambios</button>
@@ -85,6 +103,9 @@
             <p class="text-muted">No se han seleccionado restricciones.</p>
             @endif
         </div>
+        @error('restricciones')
+        <small class="text-danger">{{ $message }}</small>
+        @enderror
     </div>
 </div>
 
@@ -110,6 +131,9 @@
             <p class="text-muted">No se han seleccionado preferencias.</p>
             @endif
         </div>
+        @error('preferencias')
+        <small class="text-danger">{{ $message }}</small>
+        @enderror
     </div>
 </div>
 

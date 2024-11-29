@@ -33,11 +33,11 @@ class MiRecetaController extends Controller
             'descripcion' => 'required|string',
             'pasosPreparacion' => 'required|string',
             'caloriasConsumidas' => 'required|integer|min:0',
-            'imagen' => 'nullable|image|mimes:svg,png,jpg,webp|max:2048',
+            'imagen' => 'required|image|mimes:svg,png,jpg,webp|max:2048',
             'ingredientes' => 'required|array',
             'ingredientes.*.id' => 'required|integer|exists:ingredientes,id',
             'ingredientes.*.cantidad' => 'required|integer|min:1',
-            'ingredientes.*.unidadMedida' => 'required|string|max:50', // Cambiado a 'unidadMedida'
+            'ingredientes.*.unidadMedida' => 'required|string|max:50', 
         ]);
 
         $data = $request->except('ingredientes');

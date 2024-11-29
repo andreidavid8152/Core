@@ -2,17 +2,6 @@
 
 @section('content')
 
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-
 <h1>Crear Receta</h1>
 
 <form id="recetaForm" action="{{ route('mis-recetas.store') }}" method="POST" enctype="multipart/form-data">
@@ -22,12 +11,18 @@
     <div class="form-group">
         <label for="titulo">Título</label>
         <input type="text" name="titulo" class="form-control" placeholder="Ejemplo: Ensalada César" required>
+        @error('titulo')
+        <small class="text-danger">{{ $message }}</small>
+        @enderror
     </div>
 
     <!-- Descripción -->
     <div class="form-group mt-3">
         <label for="descripcion">Descripción</label>
         <textarea name="descripcion" class="form-control" rows="4" placeholder="Breve descripción de la receta" required></textarea>
+        @error('descripcion')
+        <small class="text-danger">{{ $message }}</small>
+        @enderror
     </div>
 
     <!-- Pasos de Preparación -->
@@ -35,12 +30,18 @@
         <label for="pasosPreparacion">Pasos de Preparación</label>
         <textarea name="pasosPreparacion" class="form-control" rows="6" placeholder="Paso a paso de cómo preparar la receta" required></textarea>
         <small class="form-text text-muted">Escribe cada paso en una línea separada. Presiona Enter para crear un nuevo paso.</small>
+        @error('pasosPreparacion')
+        <small class="text-danger">{{ $message }}</small>
+        @enderror
     </div>
 
     <!-- Calorías Consumidas -->
     <div class="form-group mt-3">
         <label for="caloriasConsumidas">Calorías Consumidas</label>
         <input type="number" name="caloriasConsumidas" class="form-control" placeholder="Ejemplo: 250" min="0" required>
+        @error('caloriasConsumidas')
+        <small class="text-danger">{{ $message }}</small>
+        @enderror
     </div>
 
     <!-- Ingredientes -->
@@ -51,12 +52,18 @@
         </button>
         <!-- Contenedor para mostrar los ingredientes seleccionados -->
         <div id="selected-ingredientes" class="mt-2"></div>
+        @error('ingredientes')
+        <small class="text-danger">{{ $message }}</small>
+        @enderror
     </div>
 
     <!-- Imagen -->
     <div class="form-group mt-3">
         <label for="imagen">Imagen</label>
         <input type="file" name="imagen" class="form-control" accept=".svg,.png,.jpg,.jpeg,.webp">
+        @error('imagen')
+        <small class="text-danger">{{ $message }}</small>
+        @enderror
     </div>
 
     <button type="submit" class="btn btn-primary mt-3">Guardar</button>
