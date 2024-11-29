@@ -35,6 +35,8 @@ Route::middleware(['user'])->group(function () {
     ]);
 
     Route::put('perfil/{id}/restricciones', [PerfilController::class, 'updateRestricciones'])->name('perfil.restricciones.update');
+
+    Route::put('perfil/{id}/preferencias', [PerfilController::class, 'updatePreferencias'])->name('perfil.preferencias.update');
 });
 
 // Administrador

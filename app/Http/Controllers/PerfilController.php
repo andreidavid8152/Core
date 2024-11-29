@@ -5,16 +5,21 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use App\Models\Restriccion;
+use App\Models\Preferencia;
 
 class PerfilController extends Controller
 {
     public function index()
     {
-        $usuario = Usuario::with('restricciones')->find(session('usuario')->id); // Carga las restricciones del usuario
-        $restricciones = Restriccion::all(); // Todas las restricciones disponibles
-        $restriccionesUsuario = $usuario->restricciones->pluck('id')->toArray(); // IDs de restricciones del usuario
+        $usuario = Usuario::with(['restricciones', 'preferencias'])->find(session('usuario')->id);
 
-        return view('perfil', compact('usuario', 'restricciones', 'restriccionesUsuario'));
+        $restricciones = Restriccion::all();
+        $restriccionesUsuario = $usuario->restricciones->pluck('id')->toArray();
+
+        $preferencias = Preferencia::all();
+        $preferenciasUsuario = $usuario->preferencias->pluck('id')->toArray();
+
+        return view('perfil', compact('usuario', 'restricciones', 'restriccionesUsuario', 'preferencias', 'preferenciasUsuario'));
     }
 
     public function update(Request $request)
@@ -56,6 +61,24 @@ class PerfilController extends Controller
         return response()->json([
             'success' => true,
             'restricciones' => $restricciones,
+        ]);
+    }
+
+    public function updatePreferencias(Request $request, $id)
+    {
+        $usuario = Usuario::findOrFail($id);
+
+        $request->validate([
+            'preferencias' => 'array|exists:preferencias,id',
+        ]);
+
+        $usuario->preferencias()->sync($request->input('preferencias', []));
+
+        $preferencias = $usuario->preferencias()->get(['preferencias.id', 'preferencias.descripcion']);
+
+        return response()->json([
+            'success' => true,
+            'preferencias' => $preferencias,
         ]);
     }
 

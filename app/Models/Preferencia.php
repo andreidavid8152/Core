@@ -11,7 +11,7 @@ class Preferencia extends Model
 
     public function usuarios()
     {
-        return $this->belongsToMany(Usuario::class, 'preferencia_usuario');
+        return $this->belongsToMany(Usuario::class, 'preferencia_usuario', 'usuario_id', 'preferencia_id')->withTimestamps();
     }
 
 }

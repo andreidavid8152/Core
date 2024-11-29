@@ -79,10 +79,35 @@
         <div id="selected-restricciones">
             @if (!empty($restriccionesUsuario))
             @foreach($restricciones->whereIn('id', $restriccionesUsuario) as $restriccion)
-            <span class="badge bg-info me-1">{{ $restriccion->descripcion }}</span>
+            <span class="badge bg-warning me-1">{{ $restriccion->descripcion }}</span>
             @endforeach
             @else
             <p class="text-muted">No se han seleccionado restricciones.</p>
+            @endif
+        </div>
+    </div>
+</div>
+
+<!-- Divisor -->
+<hr class="my-4">
+
+<!-- Contenedor de Preferencias -->
+<div class="card mb-5">
+    <div class="card-header">
+        <h4>Preferencias</h4>
+    </div>
+    <div class="card-body">
+        <button type="button" class="btn btn-info w-100 mb-3" data-bs-toggle="modal" data-bs-target="#preferenciasModal">
+            Editar Preferencias
+        </button>
+        <!-- Contenedor para mostrar las preferencias seleccionadas -->
+        <div id="selected-preferencias">
+            @if (!empty($preferenciasUsuario))
+            @foreach($preferencias->whereIn('id', $preferenciasUsuario) as $preferencia)
+            <span class="badge bg-warning me-1">{{ $preferencia->descripcion }}</span>
+            @endforeach
+            @else
+            <p class="text-muted">No se han seleccionado preferencias.</p>
             @endif
         </div>
     </div>
@@ -130,8 +155,52 @@
     </div>
 </div>
 
+<!-- Modal para Preferencias -->
+<div class="modal fade" id="preferenciasModal" tabindex="-1" aria-labelledby="preferenciasModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Seleccionar Preferencias</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Seleccionar</th>
+                            <th>Preferencia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($preferencias as $preferencia)
+                        <tr>
+                            <td>
+                                <input class="form-check-input preferencia-checkbox" type="checkbox" value="{{ $preferencia->id }}"
+                                    id="preferencia-{{ $preferencia->id }}"
+                                    {{ in_array($preferencia->id, $preferenciasUsuario) ? 'checked' : '' }}>
+                            </td>
+                            <td>
+                                <label class="form-check-label" for="preferencia-{{ $preferencia->id }}">
+                                    {{ $preferencia->descripcion }}
+                                </label>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="save-preferencias">Guardar Selección</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+
+        // Restricciones
         const saveButton = document.getElementById('save-restricciones');
         const selectedContainer = document.getElementById('selected-restricciones');
         const checkboxes = document.querySelectorAll('.restriccion-checkbox');
@@ -172,7 +241,7 @@
                         selectedContainer.innerHTML = '';
                         data.restricciones.forEach((restriccion) => {
                             const span = document.createElement('span');
-                            span.className = 'badge bg-info me-1';
+                            span.className = 'badge bg-warning me-1';
                             span.innerText = restriccion.descripcion;
                             selectedContainer.appendChild(span);
                         });
@@ -188,6 +257,64 @@
             // Cerrar el modal
             const modalInstance = bootstrap.Modal.getInstance(document.getElementById('restriccionesModal'));
             modalInstance.hide();
+        });
+
+        // Preferencias
+        const savePreferenciasButton = document.getElementById('save-preferencias');
+        const selectedPreferenciasContainer = document.getElementById('selected-preferencias');
+        const preferenciaCheckboxes = document.querySelectorAll('.preferencia-checkbox');
+
+        savePreferenciasButton.addEventListener('click', function() {
+            const selectedIds = [];
+            preferenciaCheckboxes.forEach((checkbox) => {
+                if (checkbox.checked) {
+                    selectedIds.push(checkbox.value);
+                }
+            });
+
+            // Realizar la solicitud al servidor
+            fetch(`{{ route('perfil.preferencias.update', $usuario->id) }}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        preferencias: selectedIds
+                    }),
+                })
+                .then((response) => {
+                    return response.json().then((data) => {
+                        if (!response.ok) {
+                            console.error('Error en la respuesta:', data);
+                            throw new Error(data.message || 'Error en la solicitud');
+                        }
+                        return data;
+                    });
+                })
+                .then((data) => {
+                    if (data.success) {
+                        // Actualizar las preferencias mostradas
+                        selectedPreferenciasContainer.innerHTML = '';
+                        data.preferencias.forEach((preferencia) => {
+                            const span = document.createElement('span');
+                            span.className = 'badge bg-warning me-1';
+                            span.innerText = preferencia.descripcion;
+                            selectedPreferenciasContainer.appendChild(span);
+                        });
+                    } else {
+                        alert('Ocurrió un error al guardar las preferencias.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('Ocurrió un error al guardar las preferencias.');
+                });
+
+            // Cerrar el modal
+            const preferenciasModalInstance = bootstrap.Modal.getInstance(document.getElementById('preferenciasModal'));
+            preferenciasModalInstance.hide();
         });
     });
 </script>
