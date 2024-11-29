@@ -16,9 +16,11 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item mr-4">
-                    <a class="nav-link" href="{{ route('perfil') }}">
-                        <i class="fas fa-user-circle"></i> Perfil
-                    </a>
+                    @if(session('usuario') && session('usuario')->email !== 'admin@super.com')
+                        <a class="nav-link" href="{{ route('perfil') }}">
+                            <i class="fas fa-user-circle"></i> Perfil
+                        </a>
+                    @endif
                 </li>
                 @if(session('usuario'))
                 <li class="nav-item">
