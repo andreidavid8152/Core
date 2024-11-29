@@ -18,12 +18,15 @@
     @else
         @if ($recomendaciones && count($recomendaciones) > 0)
             <ul>
-                @foreach ($recomendaciones as $receta)
-                    <li>{{ $receta }}</li>
+                @foreach ($recomendaciones as $recomendacion)
+                    <li>
+                        <strong>{{ $recomendacion['receta']->titulo }}</strong> - 
+                        Compatibilidad: {{ $recomendacion['compatibilidad'] }}%
+                    </li>
                 @endforeach
             </ul>
         @else
-            <p class="text-center text-muted">No tienes recetas marcadas como favoritas.</p>
+            <p class="text-center text-muted">No hay recomendaciones para ti.</p>
         @endif
     @endif
 </div>
