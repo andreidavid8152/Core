@@ -20,10 +20,6 @@ class HomeController extends Controller
         return view('home.index', compact('recetas'));
     }
 
-    public function recomendaciones(){
-        return view('home.recomendaciones');
-    }
-
     public function favoritos()
     {
         // Obtener al usuario autenticado desde la sesión

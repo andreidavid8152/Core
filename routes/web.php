@@ -10,6 +10,7 @@ use App\Http\Controllers\IngredienteController;
 use App\Http\Controllers\MiRecetaController;
 use App\Http\Controllers\RecetaController;
 use App\Http\Controllers\PerfilController;
+use App\Http\Controllers\RecomendacionController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,7 +19,7 @@ Route::get('/', function () {
 // Usuarios
 Route::middleware(['user'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-    Route::get('/recomendaciones', [HomeController::class, 'recomendaciones'])->name('recomendaciones');
+    Route::get('/recomendaciones', [RecomendacionController::class, 'index'])->name('recomendaciones');
     Route::get('/favoritos', [HomeController::class, 'favoritos'])->name('favoritos');
 
     Route::resource('mis-recetas', MiRecetaController::class)
