@@ -39,17 +39,24 @@ class PerfilController extends Controller
 
     public function updateRestricciones(Request $request, $id)
     {
-        $usuario = Usuario::findOrFail($id); // Busca al usuario por ID
+        $usuario = Usuario::findOrFail($id);
 
         // Validar las restricciones
         $request->validate([
-            'restricciones' => 'array|exists:restricciones,id', // Validar que las restricciones sean válidas
+            'restricciones' => 'array|exists:restricciones,id',
         ]);
 
         // Actualizar las restricciones del usuario
-        $usuario->restricciones()->sync($request->input('restricciones', [])); // Sincroniza las restricciones seleccionadas
+        $usuario->restricciones()->sync($request->input('restricciones', []));
 
-        return redirect()->route('perfil')->with('success', 'Restricciones actualizadas exitosamente.');
+        // Recuperar las restricciones actualizadas, especificando la tabla para evitar ambigüedad
+        $restricciones = $usuario->restricciones()->get(['restricciones.id', 'restricciones.descripcion']);
+
+        // Devolver respuesta JSON
+        return response()->json([
+            'success' => true,
+            'restricciones' => $restricciones,
+        ]);
     }
 
 }

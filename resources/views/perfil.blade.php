@@ -66,35 +66,27 @@
 <!-- Divisor -->
 <hr class="my-4">
 
-<!-- Formulario de Restricciones -->
-<form action="{{ route('perfil.restricciones.update', $usuario->id) }}" method="POST">
-    @csrf
-    @method('PUT')
-
-    <div class="card">
-        <div class="card-header">
-            <h4>Restricciones</h4>
-        </div>
-        <div class="card-body">
-            <button type="button" class="btn btn-info w-100 mb-3" data-bs-toggle="modal" data-bs-target="#restriccionesModal">
-                Editar Restricciones
-            </button>
-            <!-- Contenedor para mostrar las restricciones seleccionadas -->
-            <div id="selected-restricciones">
-                @if (!empty($restriccionesUsuario))
-                @foreach($restricciones->whereIn('id', $restriccionesUsuario) as $restriccion)
-                <span class="badge bg-info me-1">{{ $restriccion->descripcion }}</span>
-                @endforeach
-                @else
-                <p class="text-muted">No se han seleccionado restricciones.</p>
-                @endif
-            </div>
-        </div>
-        <div class="card-footer">
-            <button type="submit" class="btn btn-success">Guardar Restricciones</button>
+<!-- Contenedor de Restricciones -->
+<div class="card">
+    <div class="card-header">
+        <h4>Restricciones</h4>
+    </div>
+    <div class="card-body">
+        <button type="button" class="btn btn-info w-100 mb-3" data-bs-toggle="modal" data-bs-target="#restriccionesModal">
+            Editar Restricciones
+        </button>
+        <!-- Contenedor para mostrar las restricciones seleccionadas -->
+        <div id="selected-restricciones">
+            @if (!empty($restriccionesUsuario))
+            @foreach($restricciones->whereIn('id', $restriccionesUsuario) as $restriccion)
+            <span class="badge bg-info me-1">{{ $restriccion->descripcion }}</span>
+            @endforeach
+            @else
+            <p class="text-muted">No se han seleccionado restricciones.</p>
+            @endif
         </div>
     </div>
-</form>
+</div>
 
 <!-- Modal para Restricciones -->
 <div class="modal fade" id="restriccionesModal" tabindex="-1" aria-labelledby="restriccionesModalLabel" aria-hidden="true">
@@ -143,44 +135,55 @@
         const saveButton = document.getElementById('save-restricciones');
         const selectedContainer = document.getElementById('selected-restricciones');
         const checkboxes = document.querySelectorAll('.restriccion-checkbox');
-        const mainForm = document.querySelector(`form[action="{{ route('perfil.restricciones.update', $usuario->id) }}"]`);
 
         saveButton.addEventListener('click', function() {
-            selectedContainer.innerHTML = ''; // Limpia las restricciones seleccionadas
-
-            // Eliminar inputs ocultos existentes
-            const existingInputs = mainForm.querySelectorAll('.restriccion-hidden-inputs');
-            existingInputs.forEach(input => input.remove());
-
-            let selectedCount = 0;
-
-            checkboxes.forEach(checkbox => {
+            const selectedIds = [];
+            checkboxes.forEach((checkbox) => {
                 if (checkbox.checked) {
-                    selectedCount++;
-
-                    const restriccionId = checkbox.value;
-                    const label = document.querySelector(`label[for="restriccion-${restriccionId}"]`).innerText;
-
-                    // Mostrar restricciones seleccionadas
-                    const span = document.createElement('span');
-                    span.className = 'badge bg-info me-1';
-                    span.innerText = label;
-                    selectedContainer.appendChild(span);
-
-                    // Crear inputs ocultos para enviar al servidor
-                    const hiddenInput = document.createElement('input');
-                    hiddenInput.type = 'hidden';
-                    hiddenInput.name = 'restricciones[]';
-                    hiddenInput.value = restriccionId;
-                    hiddenInput.className = 'restriccion-hidden-inputs';
-                    mainForm.appendChild(hiddenInput);
+                    selectedIds.push(checkbox.value);
                 }
             });
 
-            // Si no se selecciona nada, mostrar mensaje
-            if (selectedCount === 0) {
-                selectedContainer.innerHTML = '<p class="text-muted">No se han seleccionado restricciones.</p>';
-            }
+            // Realizar la solicitud al servidor
+            fetch(`{{ route('perfil.restricciones.update', $usuario->id) }}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        restricciones: selectedIds
+                    }),
+                })
+                .then((response) => {
+                    return response.json().then((data) => {
+                        if (!response.ok) {
+                            // Manejo de errores del lado del servidor
+                            console.error('Error en la respuesta:', data);
+                            throw new Error(data.message || 'Error en la solicitud');
+                        }
+                        return data;
+                    });
+                })
+                .then((data) => {
+                    if (data.success) {
+                        // Actualizar las restricciones mostradas
+                        selectedContainer.innerHTML = '';
+                        data.restricciones.forEach((restriccion) => {
+                            const span = document.createElement('span');
+                            span.className = 'badge bg-info me-1';
+                            span.innerText = restriccion.descripcion;
+                            selectedContainer.appendChild(span);
+                        });
+                    } else {
+                        alert('Ocurrió un error al guardar las restricciones.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('Ocurrió un error al guardar las restricciones.');
+                });
 
             // Cerrar el modal
             const modalInstance = bootstrap.Modal.getInstance(document.getElementById('restriccionesModal'));
