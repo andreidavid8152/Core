@@ -160,25 +160,30 @@ class RecomendacionController extends Controller
      */
     private function obtenerRecomendaciones($usuario, $usuariosSimilares)
     {
-        // Obtener recetas favoritas de los usuarios similares
+        // Obtener recetas favoritas de los usuarios similares con el usuario que la marcó como favorita
         $recetasFavoritas = DB::table('receta_favorita')
-            ->whereIn('usuario_id', $usuariosSimilares->pluck('id'))
-            ->pluck('receta_id');
+        ->whereIn('usuario_id', $usuariosSimilares->pluck('id'))
+        ->get(['receta_id', 'usuario_id']);
 
         // Obtener IDs de recetas favoritas del usuario actual para excluirlas
         $recetasFavoritasUsuarioActual = $usuario->recetasFavoritas()->pluck('recetas.id');
 
         // Excluir recetas que el usuario ya ha agregado a favoritos
-        $recetasRecomendadas = Receta::whereIn('id', $recetasFavoritas)
-            ->whereNotIn('id', $recetasFavoritasUsuarioActual)
+        $recetaIdsRecomendadas = $recetasFavoritas->pluck('receta_id')->unique()->diff($recetasFavoritasUsuarioActual);
+
+        // Obtener las recetas recomendadas
+        $recetasRecomendadas = Receta::whereIn('id', $recetaIdsRecomendadas)
             ->with('usuario')
             ->get();
 
         $recomendaciones = [];
 
         foreach ($recetasRecomendadas as $receta) {
-            // Obtener el usuario que marcó como favorita la receta
-            $usuarioReceta = $usuariosSimilares->firstWhere('id', $receta->usuario_id);
+            // Encontrar los usuarios similares que marcaron esta receta como favorita
+            $usuariosQueFavoritaron = $recetasFavoritas->where('receta_id', $receta->id)->pluck('usuario_id');
+
+            // Obtener el usuario similar con mayor compatibilidad que marcó esta receta como favorita
+            $usuarioReceta = $usuariosSimilares->whereIn('id', $usuariosQueFavoritaron)->sortByDesc('porcentajeCompatibilidad')->first();
 
             if ($usuarioReceta) {
                 // La compatibilidad de la receta es la misma que la del usuario que la marcó como favorita
@@ -188,6 +193,7 @@ class RecomendacionController extends Controller
                     $recomendaciones[] = [
                         'receta' => $receta,
                         'compatibilidad' => round($porcentajeCompatibilidad, 2),
+                        'usuario' => $usuarioReceta, // Agregar el usuario con el que se compatibilizó
                     ];
                 }
             }

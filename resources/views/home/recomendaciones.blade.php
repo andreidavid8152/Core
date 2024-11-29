@@ -22,11 +22,15 @@
                     <li>
                         <strong>{{ $recomendacion['receta']->titulo }}</strong> - 
                         Compatibilidad: {{ $recomendacion['compatibilidad'] }}%
+                        <p>{{ $recomendacion['receta']->descripcion }}</p>
+                        <p>
+                            Recomendado en base a: {{ $recomendacion['usuario']->nombre }}
+                        </p>
                     </li>
                 @endforeach
             </ul>
         @else
-            <p class="text-center text-muted">No hay recomendaciones para ti.</p>
+            <p class="text-center text-muted">No se encontraron recomendaciones en este momento.</p>
         @endif
     @endif
 </div>
