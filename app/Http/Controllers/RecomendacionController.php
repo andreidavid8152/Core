@@ -11,6 +11,35 @@ class RecomendacionController extends Controller
     public function index()
     {
         $usuario = session('usuario');
+
+        // Validar el perfil del usuario
+        $errores = $this->validarPerfilUsuario($usuario);
+
+        // Si hay errores, mostrar mensaje detallado
+        if (count($errores) > 0) {
+            return view('home.recomendaciones', [
+                'mensaje' => 'Completa los siguientes datos en tu perfil para ver recomendaciones:',
+                'errores' => $errores,
+            ]);
+        }
+
+        // Obtener usuarios similares
+        $usuariosSimilares = $this->obtenerUsuariosSimilares($usuario);
+
+        // Obtener recomendaciones de recetas
+        $recomendaciones = $this->obtenerRecomendaciones($usuario, $usuariosSimilares);
+
+        return view('home.recomendaciones', compact('recomendaciones'));
+    }
+
+    /**
+     * Validar que el perfil del usuario esté completo.
+     *
+     * @param  \App\Models\Usuario  $usuario
+     * @return array  $errores
+     */
+    private function validarPerfilUsuario($usuario)
+    {
         $errores = [];
 
         // Verificar campos de la tabla usuarios
@@ -41,73 +70,100 @@ class RecomendacionController extends Controller
             $errores[] = 'Al menos 3 restricciones';
         }
 
-        // Si hay errores, mostrar mensaje detallado
-        if (count($errores) > 0) {
-            return view('home.recomendaciones', [
-                'mensaje' => 'Completa los siguientes datos en tu perfil para ver recomendaciones:',
-                'errores' => $errores,
-            ]);
-        }
+        return $errores;
+    }
 
+    /**
+     * Obtener usuarios similares basados en preferencias, restricciones y datos personales.
+     *
+     * @param  \App\Models\Usuario  $usuario
+     * @return \Illuminate\Support\Collection  $usuariosSimilares
+     */
+    private function obtenerUsuariosSimilares($usuario)
+    {
         // Obtener las preferencias y restricciones del usuario actual
         $preferenciasUsuario = $usuario->preferencias()->pluck('preferencias.id')->toArray();
         $restriccionesUsuario = $usuario->restricciones()->pluck('restricciones.id')->toArray();
 
-        // Encontrar otros usuarios con preferencias y restricciones similares
-        $usuariosSimilares = Usuario::where('id', '!=', $usuario->id)
+        // Obtener otros usuarios con sus preferencias y restricciones
+        $otrosUsuarios = Usuario::where('id', '!=', $usuario->id)
             ->with(['preferencias', 'restricciones'])
             ->get();
 
-        $usuariosSimilares = $usuariosSimilares->map(function ($u) use ($usuario, $preferenciasUsuario, $restriccionesUsuario) {
-
-            $preferenciasCompartidas = count(array_intersect(
-                $preferenciasUsuario,
-                $u->preferencias->pluck('id')->toArray()
-            ));
-            $restriccionesCompartidas = count(array_intersect(
-                $restriccionesUsuario,
-                $u->restricciones->pluck('id')->toArray()
-            ));
-
-            $totalPreferencias = count($preferenciasUsuario);
-            $totalRestricciones = count($restriccionesUsuario);
-
-            $porcentajeCompatibilidad = 0;
-
-            if ($totalPreferencias > 0) {
-                $porcentajeCompatibilidad += ($preferenciasCompartidas / $totalPreferencias) * 50;
-            }
-
-            if ($totalRestricciones > 0) {
-                $porcentajeCompatibilidad += ($restriccionesCompartidas / $totalRestricciones) * 50;
-            }
-
-            // Comparar datos personales (edad, sexo)
-            $datosPersonalesCompatibles = 0;
-            if ($u->sexo == $usuario->sexo) {
-                $datosPersonalesCompatibles += 25;
-            }
-            if (abs($u->edad - $usuario->edad) <= 5) { // Edades similares si la diferencia es de 5 años o menos
-                $datosPersonalesCompatibles += 25;
-            }
-
-            $porcentajeCompatibilidad += ($datosPersonalesCompatibles * 0.5); // Peso del 50% a los datos personales
-
-            // Añadir el porcentaje de compatibilidad al usuario
-            $u->porcentajeCompatibilidad = $porcentajeCompatibilidad;
-
+        // Calcular compatibilidad para cada usuario
+        $usuariosSimilares = $otrosUsuarios->map(function ($u) use ($usuario, $preferenciasUsuario, $restriccionesUsuario) {
+            $u->porcentajeCompatibilidad = $this->calcularCompatibilidad($usuario, $u, $preferenciasUsuario, $restriccionesUsuario);
             return $u;
         });
 
-        // Filtrar usuarios con compatibilidad mayor al 50%
+        // Filtrar usuarios con compatibilidad mayor o igual al 50%
         $usuariosSimilares = $usuariosSimilares->filter(function ($u) {
             return $u->porcentajeCompatibilidad >= 50;
         });
 
+        return $usuariosSimilares;
+    }
+
+    /**
+     * Calcular el porcentaje de compatibilidad entre dos usuarios.
+     *
+     * @param  \App\Models\Usuario  $usuarioActual
+     * @param  \App\Models\Usuario  $otroUsuario
+     * @param  array  $preferenciasUsuario
+     * @param  array  $restriccionesUsuario
+     * @return float  $porcentajeCompatibilidad
+     */
+    private function calcularCompatibilidad($usuarioActual, $otroUsuario, $preferenciasUsuario, $restriccionesUsuario)
+    {
+        $preferenciasCompartidas = count(array_intersect(
+            $preferenciasUsuario,
+            $otroUsuario->preferencias->pluck('id')->toArray()
+        ));
+        $restriccionesCompartidas = count(array_intersect(
+            $restriccionesUsuario,
+            $otroUsuario->restricciones->pluck('id')->toArray()
+        ));
+
+        $totalPreferencias = count($preferenciasUsuario);
+        $totalRestricciones = count($restriccionesUsuario);
+
+        $porcentajeCompatibilidad = 0;
+
+        if ($totalPreferencias > 0) {
+            $porcentajeCompatibilidad += ($preferenciasCompartidas / $totalPreferencias) * 50;
+        }
+
+        if ($totalRestricciones > 0) {
+            $porcentajeCompatibilidad += ($restriccionesCompartidas / $totalRestricciones) * 50;
+        }
+
+        // Comparar datos personales (edad, sexo)
+        $datosPersonalesCompatibles = 0;
+        if ($otroUsuario->sexo == $usuarioActual->sexo) {
+            $datosPersonalesCompatibles += 25;
+        }
+        if (abs($otroUsuario->edad - $usuarioActual->edad) <= 5) { // Edades similares si la diferencia es de 5 años o menos
+            $datosPersonalesCompatibles += 25;
+        }
+
+        $porcentajeCompatibilidad += ($datosPersonalesCompatibles * 0.5); // Peso del 50% a los datos personales
+
+        return $porcentajeCompatibilidad;
+    }
+
+    /**
+     * Obtener recomendaciones de recetas basadas en usuarios similares.
+     *
+     * @param  \App\Models\Usuario  $usuario
+     * @param  \Illuminate\Support\Collection  $usuariosSimilares
+     * @return array  $recomendaciones
+     */
+    private function obtenerRecomendaciones($usuario, $usuariosSimilares)
+    {
         // Obtener recetas favoritas de los usuarios similares
         $recetasFavoritas = DB::table('receta_favorita')
-        ->whereIn('usuario_id', $usuariosSimilares->pluck('id'))
-        ->pluck('receta_id');
+            ->whereIn('usuario_id', $usuariosSimilares->pluck('id'))
+            ->pluck('receta_id');
 
         // Obtener IDs de recetas favoritas del usuario actual para excluirlas
         $recetasFavoritasUsuarioActual = $usuario->recetasFavoritas()->pluck('recetas.id');
@@ -142,6 +198,6 @@ class RecomendacionController extends Controller
             return $b['compatibilidad'] <=> $a['compatibilidad'];
         });
 
-        return view('home.recomendaciones', compact('recomendaciones'));
+        return $recomendaciones;
     }
 }
