@@ -10,6 +10,9 @@
         <div class="form-group">
             <label for="descripcion">Descripción</label>
             <input type="text" name="descripcion" class="form-control" value="{{ $restriccion->descripcion }}" required>
+            @error('descripcion')
+            <small class="text-danger">{{ $message }}</small>
+            @enderror
         </div>
 
         <button type="submit" class="btn btn-primary mt-3">Actualizar</button>

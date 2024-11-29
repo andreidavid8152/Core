@@ -30,7 +30,7 @@ class RestriccionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'descripcion' => 'required'
+            'descripcion' => 'required|string|max:255|unique:restricciones,descripcion'
         ]);
 
         Restriccion::create($request->all());
@@ -52,7 +52,7 @@ class RestriccionController extends Controller
     public function update(Request $request, Restriccion $restriccion)
     {
         $request->validate([
-            'descripcion' => 'required|string|max:255',
+            'descripcion' => 'required|string|max:255|unique:restricciones,descripcion,' . $restriccion->id
         ]);
 
         $restriccion->update($request->all());
