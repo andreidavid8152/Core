@@ -143,8 +143,16 @@ class MiRecetaController extends Controller
 
     public function destroy(Receta $receta)
     {
+        // Verifica si la receta está asociada a algún usuario o plan alimenticio
+        if ($receta->usuariosFavoritos()->exists()) {
+            return redirect()->route('mis-recetas.index')
+            ->with('error', 'No se puede eliminar la receta porque está en uso.');
+        }
+
+        // Si no está asociada, se permite la eliminación
         $receta->delete();
 
-        return redirect()->route('mis-recetas.index')->with('success', 'Receta eliminada exitosamente.');
+        return redirect()->route('mis-recetas.index')
+        ->with('success', 'Receta eliminada exitosamente.');
     }
 }

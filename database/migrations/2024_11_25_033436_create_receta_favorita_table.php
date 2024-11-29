@@ -22,7 +22,7 @@ return new class extends Migration
             // Relación con la tabla recetas
             $table->foreignId('receta_id')
                 ->constrained('recetas')
-                ->onDelete('cascade'); // Si se elimina la receta, se eliminan los favoritos relacionados
+                ->onDelete('restrict'); // Si se elimina la receta, y existen registros de la receta dentro de la tabla no se permite la eliminación
 
             $table->timestamps(); // Para manejar fecha de agregado a favoritos
         });
