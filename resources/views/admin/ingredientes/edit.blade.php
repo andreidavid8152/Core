@@ -12,6 +12,9 @@
         <div class="form-group">
             <label for="nombre">Nombre del Ingrediente</label>
             <input type="text" name="nombre" class="form-control" value="{{ $ingrediente->nombre }}" required>
+            @error('nombre')
+            <small class="text-danger">{{ $message }}</small>
+            @enderror
         </div>
         <button type="submit" class="btn btn-primary mt-3">Actualizar</button>
         <a href="{{ route('ingredientes.index') }}" class="btn btn-secondary mt-3">Cancelar</a>

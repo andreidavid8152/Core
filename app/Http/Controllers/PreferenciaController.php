@@ -30,7 +30,7 @@ class PreferenciaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'descripcion' => 'required|string|max:255'
+            'descripcion' => 'required|string|max:255|unique:preferencias,descripcion'
         ]);
 
         Preferencia::create($request->all());
@@ -53,7 +53,7 @@ class PreferenciaController extends Controller
     public function update(Request $request, Preferencia $preferencia)
     {
         $request->validate([
-            'descripcion' => 'required|string|max:255'
+            'descripcion' => 'required|string|max:255|unique:preferencias,descripcion,' . $preferencia->id,
         ]);
 
         $preferencia->update($request->all());
