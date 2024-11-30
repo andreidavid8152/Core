@@ -16,7 +16,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Usuarios
+// Usuarioss
 Route::middleware(['user'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/recomendaciones', [RecomendacionController::class, 'index'])->name('recomendaciones');
