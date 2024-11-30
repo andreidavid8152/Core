@@ -9,10 +9,8 @@ class ReporteController extends Controller
 {
     public function index()
     {
-        // Generar reporte combinado de recetas más similares y favoritas
         $similitudes = $this->obtenerRecetasSimilaresYFavoritas();
 
-        // Retornar la vista con el reporte
         return view('home.reporte', compact('similitudes'));
     }
 
@@ -25,7 +23,6 @@ class ReporteController extends Controller
 
         $similitudes = [];
 
-        // Evitar comparaciones redundantes usando índices
         $recetaCount = count($recetas);
         for ($i = 0; $i < $recetaCount; $i++) {
             for ($j = $i + 1; $j < $recetaCount; $j++) {
