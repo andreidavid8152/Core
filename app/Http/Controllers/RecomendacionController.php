@@ -32,12 +32,6 @@ class RecomendacionController extends Controller
         return view('home.recomendaciones', compact('recomendaciones'));
     }
 
-    /**
-     * Validar que el perfil del usuario esté completo.
-     *
-     * @param  \App\Models\Usuario  $usuario
-     * @return array  $errores
-     */
     private function validarPerfilUsuario($usuario)
     {
         $errores = [];
@@ -73,12 +67,6 @@ class RecomendacionController extends Controller
         return $errores;
     }
 
-    /**
-     * Obtener usuarios similares basados en preferencias, restricciones y datos personales.
-     *
-     * @param  \App\Models\Usuario  $usuario
-     * @return \Illuminate\Support\Collection  $usuariosSimilares
-     */
     private function obtenerUsuariosSimilares($usuario)
     {
         // Obtener las preferencias y restricciones del usuario actual
@@ -104,15 +92,7 @@ class RecomendacionController extends Controller
         return $usuariosSimilares;
     }
 
-    /**
-     * Calcular el porcentaje de compatibilidad entre dos usuarios.
-     *
-     * @param  \App\Models\Usuario  $usuarioActual
-     * @param  \App\Models\Usuario  $otroUsuario
-     * @param  array  $preferenciasUsuario
-     * @param  array  $restriccionesUsuario
-     * @return float  $porcentajeCompatibilidad
-     */
+ 
     private function calcularCompatibilidad($usuarioActual, $otroUsuario, $preferenciasUsuario, $restriccionesUsuario)
     {
         $preferenciasCompartidas = count(array_intersect(
@@ -151,13 +131,6 @@ class RecomendacionController extends Controller
         return $porcentajeCompatibilidad;
     }
 
-    /**
-     * Obtener recomendaciones de recetas basadas en usuarios similares.
-     *
-     * @param  \App\Models\Usuario  $usuario
-     * @param  \Illuminate\Support\Collection  $usuariosSimilares
-     * @return array  $recomendaciones
-     */
     private function obtenerRecomendaciones($usuario, $usuariosSimilares)
     {
         // Obtener recetas favoritas de los usuarios similares con el usuario que la marcó como favorita
@@ -179,23 +152,19 @@ class RecomendacionController extends Controller
         $recomendaciones = [];
 
         foreach ($recetasRecomendadas as $receta) {
-            // Encontrar los usuarios similares que marcaron esta receta como favorita
+
             $usuariosQueFavoritaron = $recetasFavoritas->where('receta_id', $receta->id)->pluck('usuario_id');
 
-            // Obtener el usuario similar con mayor compatibilidad que marcó esta receta como favorita
             $usuarioReceta = $usuariosSimilares->whereIn('id', $usuariosQueFavoritaron)->sortByDesc('porcentajeCompatibilidad')->first();
 
             if ($usuarioReceta) {
-                // La compatibilidad de la receta es la misma que la del usuario que la marcó como favorita
                 $porcentajeCompatibilidad = $usuarioReceta->porcentajeCompatibilidad;
 
-                if ($porcentajeCompatibilidad >= 65) { // Considerar solo compatibilidad >= 75%
-                    $recomendaciones[] = [
-                        'receta' => $receta,
-                        'compatibilidad' => round($porcentajeCompatibilidad, 2),
-                        'usuario' => $usuarioReceta, // Agregar el usuario con el que se compatibilizó
-                    ];
-                }
+                $recomendaciones[] = [
+                    'receta' => $receta,
+                    'compatibilidad' => round($porcentajeCompatibilidad, 2),
+                    'usuario' => $usuarioReceta,
+                ];
             }
         }
 
