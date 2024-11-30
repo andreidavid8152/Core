@@ -189,7 +189,7 @@ class RecomendacionController extends Controller
                 // La compatibilidad de la receta es la misma que la del usuario que la marcó como favorita
                 $porcentajeCompatibilidad = $usuarioReceta->porcentajeCompatibilidad;
 
-                if ($porcentajeCompatibilidad >= 75) { // Considerar solo compatibilidad >= 75%
+                if ($porcentajeCompatibilidad >= 65) { // Considerar solo compatibilidad >= 75%
                     $recomendaciones[] = [
                         'receta' => $receta,
                         'compatibilidad' => round($porcentajeCompatibilidad, 2),
