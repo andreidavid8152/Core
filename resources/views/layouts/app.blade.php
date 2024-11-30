@@ -17,9 +17,9 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item mr-4">
                     @if(session('usuario') && session('usuario')->email !== 'admin@super.com')
-                        <a class="nav-link" href="{{ route('perfil') }}">
-                            <i class="fas fa-user-circle"></i> Perfil
-                        </a>
+                    <a class="nav-link" href="{{ route('perfil') }}">
+                        <i class="fas fa-user-circle"></i> Perfil
+                    </a>
                     @endif
                 </li>
                 @if(session('usuario'))
@@ -37,7 +37,7 @@
     <div class="container mt-4">
 
         <!-- Mostrar el navbar secundario solo en rutas específicas -->
-        @if(Request::routeIs('home', 'mis-recetas.index', 'favoritos', 'recomendaciones'))
+        @if(Request::routeIs('home', 'mis-recetas.index', 'favoritos', 'recomendaciones', 'reporte'))
         <nav class="navbar navbar-expand-lg navbar-light bg-light mt-3">
             <div class="container">
                 <ul class="navbar-nav mx-auto">
@@ -54,8 +54,12 @@
                         <a class="nav-link {{ Route::is('favoritos') ? 'active' : '' }}" href="{{ route('favoritos') }}">Favoritos</a>
                     </li>
                     <!-- Recomendaciones -->
-                    <li class="nav-item">
+                    <li class="nav-item mr-5">
                         <a class="nav-link {{ Route::is('recomendaciones') ? 'active' : '' }}" href="{{ route('recomendaciones') }}">Recomendaciones</a>
+                    </li>
+                    <!-- Reporte -->
+                    <li class="nav-item">
+                        <a class="nav-link {{ Route::is('reporte') ? 'active' : '' }}" href="{{ route('reporte') }}">Reporte</a>
                     </li>
                 </ul>
             </div>

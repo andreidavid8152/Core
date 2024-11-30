@@ -11,6 +11,7 @@ use App\Http\Controllers\MiRecetaController;
 use App\Http\Controllers\RecetaController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\RecomendacionController;
+use App\Http\Controllers\ReporteController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,6 +22,8 @@ Route::middleware(['user'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/recomendaciones', [RecomendacionController::class, 'index'])->name('recomendaciones');
     Route::get('/favoritos', [HomeController::class, 'favoritos'])->name('favoritos');
+
+    Route::get('/reporte', [ReporteController::class, 'index'])->name('reporte');
 
     Route::resource('mis-recetas', MiRecetaController::class)
     ->parameters([

@@ -18,7 +18,7 @@ class Receta extends Model
 
     public function usuariosFavoritos()
     {
-        return $this->belongsToMany(Usuario::class, 'receta_favorita')->withTimestamps();
+        return $this->belongsToMany(Usuario::class, 'receta_favorita', 'receta_id', 'usuario_id')->withTimestamps();
     }
 
     public function usuario()
