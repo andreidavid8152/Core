@@ -2,36 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\RecetaService;
 use Illuminate\Http\Request;
-use App\Models\Receta;
-use App\Models\Usuario;
 
 class HomeController extends Controller
 {
+    private $recetaService;
+
+    public function __construct(RecetaService $recetaService)
+    {
+        $this->recetaService = $recetaService;
+    }
+
     public function index()
     {
-        // Obtener el usuario desde la sesión
         $usuario = session('usuario');
-
-        // Obtener todas las recetas
-        $recetas = Receta::where('usuario_id', '!=', $usuario->id)->get();
-
-        // Pasar las recetas a la vista
+        $recetas = $this->recetaService->obtenerRecetasNoDelUsuario($usuario);
         return view('home.index', compact('recetas'));
     }
 
     public function favoritos()
     {
-        // Obtener al usuario autenticado desde la sesión
         $usuario = session('usuario');
-        $usuario = Usuario::find($usuario->id); // Asegurar el modelo completo
-
-        // Obtener las recetas favoritas del usuario
-        $favoritos = $usuario->recetasFavoritas;
-
-        // Retornar la vista con las recetas favoritas
+        $favoritos = $this->recetaService->obtenerRecetasFavoritas($usuario);
         return view('home.favoritos', compact('favoritos'));
     }
-
-
 }
