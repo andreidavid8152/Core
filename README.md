@@ -34,6 +34,38 @@ El presente proyecto se enfoca en la nutrición y la creación de recetas person
 6. **Gestión de Preferencias (Administrador):** El administrador puede crear, editar y eliminar preferencias que se asignan a los usuarios, permitiendo que se personalicen aún más las recomendaciones de recetas según los gustos individuales.
    - **Restricción de eliminación:** No se puede eliminar una preferencia en uso; si está asociada a algún usuario, se mostrará un mensaje de advertencia.
 
+## Implementaciones de Mejora: Principios SOLID y Patrones de Diseño
+
+Como parte de la mejora de la arquitectura del proyecto, se han aplicado las siguientes implementaciones:
+
+### **1. Principio de Responsabilidad Única (SRP)**
+- **Descripción:** Se trasladó la lógica de negocio de los controladores a servicios especializados. Esto permite que los controladores se enfoquen únicamente en coordinar las vistas y servicios, mejorando la modularidad y mantenibilidad del proyecto.
+- **Archivos creados/modificados:**
+  - `app/Services/RecetaService.php`: Encapsula la lógica de negocio relacionada con las recetas, como obtener recetas y favoritos.
+  - `app/Http/Controllers/HomeController.php`: Modificado para delegar la lógica de negocio al servicio `RecetaService`.
+
+### **2. Principio de Inversión de Dependencias (DIP)**
+- **Descripción:** Se introdujeron interfaces para desacoplar la lógica de los controladores de las implementaciones concretas, facilitando cambios futuros y pruebas unitarias.
+- **Archivos creados/modificados:**
+  - `app/Repositories/Interfaces/IRecetaRepository.php`: Define la interfaz para gestionar recetas.
+  - `app/Repositories/EloquentRecetaRepository.php`: Implementación concreta que utiliza Eloquent para interactuar con la base de datos.
+  - `app/Http/Controllers/RecetaController.php`: Modificado para inyectar dependencias mediante `IRecetaRepository`.
+  - `app/Providers/AppServiceProvider.php`: Configurado para vincular la interfaz `IRecetaRepository` con su implementación concreta.
+
+### **3. Patrón de Diseño Factory**
+- **Descripción:** Centraliza la lógica de creación de objetos mediante una fábrica, eliminando la duplicación de lógica y mejorando la claridad del código.
+- **Archivos creados/modificados:**
+  - `app/Factories/UsuarioFactory.php`: Gestiona la creación de instancias de usuario desde la sesión.
+  - `app/Http/Controllers/RecetaController.php`: Modificado para utilizar la fábrica `UsuarioFactory` en lugar de crear instancias directamente.
+
+### **4. Patrón de Diseño Observer**
+- **Descripción:** Implementado para notificar automáticamente a las vistas cuando los modelos cambian, utilizando eventos y listeners.
+- **Archivos creados/modificados:**
+  - `app/Events/UsuarioUpdated.php`: Evento que se dispara cuando un modelo de usuario es actualizado.
+  - `app/Listeners/ActualizarVistasListener.php`: Listener que maneja el evento `UsuarioUpdated` para notificar a las vistas.
+  - `app/Models/Usuario.php`: Modificado para despachar el evento `UsuarioUpdated` al actualizarse.
+  - `app/Providers/EventServiceProvider.php`: Configurado para registrar eventos y listeners.
+
 ## Créditos
 - **Videos de referencia:**
   - [Fazt Code - Laravel desde cero (Parte 1)](https://www.youtube.com/watch?v=_Rsen6614Dg&t=247s&ab_channel=FaztCode)
